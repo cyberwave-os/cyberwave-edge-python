@@ -1,0 +1,36 @@
+[Unit]
+Description=Cyberwave Edge Python Service
+Documentation=https://cyberwave.com/docs
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=cyberwave
+Group=cyberwave
+
+# Working directory - adjust to your installation path
+WorkingDirectory=/opt/cyberwave-edge
+
+# Environment file with credentials
+EnvironmentFile=/opt/cyberwave-edge/.env
+
+# Python executable and service script
+ExecStart=/usr/bin/python3 -m cyberwave_edge.service
+
+# Restart policy
+Restart=always
+RestartSec=10
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=cyberwave-edge
+
+[Install]
+WantedBy=multi-user.target
+

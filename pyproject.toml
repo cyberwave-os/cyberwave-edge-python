@@ -1,0 +1,70 @@
+[project]
+name = "cyberwave-edge-python"
+version = "0.1.0"
+description = "Simple, open-source edge software to integrate sensors and USB robots to Cyberwave"
+authors = [
+    { name = "Vittorio Banfi", email = "vittorio@cyberwave.com" },
+]
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+keywords = ["robotics", "edge computing", "sensors", "cyberwave"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Science/Research",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Robotics",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "cyberwave @ file:///Users/lapsus/cw/cyberwave-python",
+    "pyserial>=3.5",
+    "opencv-python>=4.8.0",
+    "numpy>=1.24.0",
+    "aiortc>=1.5.0",
+    "av>=10.0.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.1.0",
+]
+realsense = [
+    "pyrealsense2>=2.54.0 ; sys_platform != 'darwin'",
+    "pyrealsense2-macosx>=2.54 ; sys_platform == 'darwin'",
+]
+
+[project.scripts]
+cyberwave-edge = "cyberwave_edge.service:main"
+
+[project.urls]
+homepage = "https://cyberwave.com"
+repository = "https://github.com/cyberwave/cyberwave-edge-python"
+documentation = "https://docs.cyberwave.com"
+
+[build-system]
+requires = ["setuptools>=65.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["cyberwave_edge*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "N", "B", "C4"]
+
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
