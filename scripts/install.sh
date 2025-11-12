@@ -17,6 +17,8 @@ fi
 INSTALL_DIR="/opt/cyberwave-edge"
 SERVICE_USER="cyberwave"
 SERVICE_FILE="cyberwave-edge.service"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # Create service user if it doesn't exist
 if ! id "$SERVICE_USER" &>/dev/null; then
@@ -30,15 +32,15 @@ fi
 echo "Installing system dependencies..."
 if command -v apt-get &> /dev/null; then
     apt-get update
-    apt-get install -y ffmpeg
+    apt-get install -y ffmpeg python3-venv python3-full
 elif command -v yum &> /dev/null; then
-    yum install -y ffmpeg
+    yum install -y ffmpeg python3-virtualenv
 elif command -v dnf &> /dev/null; then
-    dnf install -y ffmpeg
+    dnf install -y ffmpeg python3-virtualenv
 elif command -v pacman &> /dev/null; then
-    pacman -S --noconfirm ffmpeg
+    pacman -S --noconfirm ffmpeg python-virtualenv
 else
-    echo "WARNING: Could not detect package manager. Please install ffmpeg manually."
+    echo "WARNING: Could not detect package manager. Please install ffmpeg and python3-venv manually."
     echo "ffmpeg is required for video streaming functionality."
 fi
 
@@ -47,22 +49,20 @@ echo "Creating installation directory: $INSTALL_DIR"
 mkdir -p $INSTALL_DIR
 cd $INSTALL_DIR
 
+# Create virtual environment
+echo "Creating Python virtual environment..."
+python3 -m venv $INSTALL_DIR/venv
+
 # Install Python dependencies
 echo "Installing Python package..."
-if command -v pip3 &> /dev/null; then
-    pip3 install cyberwave-edge-python
-elif command -v pip &> /dev/null; then
-    pip install cyberwave-edge-python
-else
-    echo "ERROR: pip not found. Please install Python 3 and pip first."
-    exit 1
-fi
+$INSTALL_DIR/venv/bin/pip install --upgrade pip
+$INSTALL_DIR/venv/bin/pip install cyberwave-edge-python
 
 # Copy .env.example if .env doesn't exist
 if [ ! -f "$INSTALL_DIR/.env" ]; then
     echo "Creating .env file from example..."
-    if [ -f "$(dirname $0)/../.env.example" ]; then
-        cp "$(dirname $0)/../.env.example" "$INSTALL_DIR/.env"
+    if [ -f "$PROJECT_ROOT/.env.example" ]; then
+        cp "$PROJECT_ROOT/.env.example" "$INSTALL_DIR/.env"
         echo
         echo "⚠️  IMPORTANT: Edit $INSTALL_DIR/.env with your credentials!"
         echo
@@ -80,7 +80,7 @@ chmod 600 $INSTALL_DIR/.env
 
 # Install systemd service
 echo "Installing systemd service..."
-cp "$(dirname $0)/$SERVICE_FILE" /etc/systemd/system/
+cp "$SCRIPT_DIR/$SERVICE_FILE" /etc/systemd/system/
 systemctl daemon-reload
 
 # Enable service

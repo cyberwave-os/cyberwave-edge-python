@@ -23,7 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "cyberwave @ file:///Users/lapsus/cw/cyberwave-python",
+    "cyberwave @ git+https://github.com/cyberwave-os/cyberwave-python.git",
     "pyserial>=3.5",
     "opencv-python>=4.8.0",
     "numpy>=1.24.0",
