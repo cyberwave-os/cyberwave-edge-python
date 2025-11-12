@@ -15,8 +15,8 @@ WorkingDirectory=/opt/cyberwave-edge
 # Environment file with credentials
 EnvironmentFile=/opt/cyberwave-edge/.env
 
-# Python executable and service script
-ExecStart=/usr/bin/python3 -m cyberwave_edge.service
+# Python executable and service script (using virtual environment)
+ExecStart=/opt/cyberwave-edge/venv/bin/python -m cyberwave_edge.service
 
 # Restart policy
 Restart=always
