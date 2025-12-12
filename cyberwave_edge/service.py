@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from cyberwave import Cyberwave  # type: ignore[import-untyped]
+from cyberwave.utils import TimeReference  # type: ignore[import-untyped]
 
 from .config import EdgeConfig, load_config
 
@@ -181,10 +182,14 @@ class EdgeService:
         
         video_stream = None
         try:
+            # Create a TimeReference for frame timestamping
+            time_reference = TimeReference()
+            
             video_stream = self.client.video_stream(
                 twin_uuid=self.config.twin_uuid,
                 camera_id=self.config.camera_id or 0,
                 fps=self.config.camera_fps or 20,
+                time_reference=time_reference,
             )
             
             await video_stream.start()
@@ -305,8 +310,8 @@ class EdgeService:
                     logger.error(f"Error disconnecting from Cyberwave client: {e}")
 
 
-async def main():
-    """Main entry point for the edge service"""
+async def async_main():
+    """Async main entry point for the edge service"""
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -341,5 +346,10 @@ async def main():
         sys.exit(1)
 
 
+def main():
+    """Main entry point wrapper for CLI"""
+    asyncio.run(async_main())
+
+
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()
